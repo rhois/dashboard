@@ -68,7 +68,19 @@ export const updateUsersList = (data) => ({
   isLoaded: true,
 });
 
+export const deletePosts = id => () => {
+  if(id) {
+    return fetchData({
+      method: 'DELETE',
+      serviceName: `${url.LIST_POSTS}/${id}`,
+      callback: () => {},
+    });
+  }
+  return false;
+};
+
 export default {
     fetchPosts,
     fetchUsers,
+    deletePosts,
 };

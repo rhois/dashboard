@@ -5,6 +5,8 @@ import 'react-select/dist/react-select.css';
 import { browserHistory } from 'react-router';
 import { PageWrapper } from '../main-layout/libraries/page-wrapper';
 import { ActivityIndicator } from '../libraries/activity-indicator';
+import { Modal } from '../libraries/modal';
+import { styles } from './styles';
 
 export class PagePostsComponent extends Component {
     constructor(props) {
@@ -12,6 +14,8 @@ export class PagePostsComponent extends Component {
         this.state = {
           idUser: 0,
           loading: false,
+          modalVisible: false,
+          deleteId: 0,
         };
       }
     componentDidMount() {
@@ -27,6 +31,16 @@ export class PagePostsComponent extends Component {
                 });
         }, 500);
     }
+    setModalVisible(visible) {
+        this.setState({ modalVisible: visible });
+    }
+    handleDelete(id) {
+        const { deletePosts } = this.props;
+        deletePosts(id).then((data) => {
+          this.props.updatePosts();
+        });
+        this.setModalVisible(!this.state.modalVisible);
+      }
     render() {
         const {
             posts,
@@ -51,6 +65,38 @@ export class PagePostsComponent extends Component {
             <PageWrapper
                 title="Posts"
             >
+                <Modal
+                    visible={this.state.modalVisible}
+                    modalStyle={styles.modal}
+                    closeStyle={styles.close}
+                    close={() => this.setModalVisible(!this.state.modalVisible)}
+                >
+                    <div style={styles.contentModal}>
+                        Are you sure want to delete this post?
+                    </div>
+                    <ul style={styles.buttonModal}>
+                        <li style={styles.listModal}>
+                            <a
+                                role="button"
+                                tabIndex="0"
+                                style={styles.btnListModal}
+                                onClick={() => this.setModalVisible(!this.state.modalVisible)}
+                            >
+                                CANCEL
+                            </a>
+                        </li>
+                        <li style={styles.listModal}>
+                            <a
+                                role="button"
+                                tabIndex="0"
+                                style={styles.btnListModal}
+                                onClick={() => this.handleDelete(this.state.deleteId)}
+                            >
+                                DELETE
+                            </a>
+                        </li>
+                    </ul>
+                </Modal>
                 <div className="col-lg-12">
                     <div className="panel panel-default">
                         <div className="panel-heading">
@@ -99,14 +145,41 @@ export class PagePostsComponent extends Component {
                                                 <td>{item.title}</td>
                                                 <td>{item.body}</td>
                                                 <td>
-                                                    <a
-                                                        role="button"
-                                                        tabIndex="0"
-                                                        onClick={() => browserHistory.push(`/posts/${item.id}`)}
-                                                    >
-                                                        <i className="fa fa-search fa-fw" />
-                                                        <span>Detail</span>
-                                                    </a>
+                                                    <ul>
+                                                        <li>
+                                                            <a
+                                                                role="button"
+                                                                tabIndex="0"
+                                                                onClick={() => browserHistory.push(`/posts/${item.id}`)}
+                                                            >
+                                                                <i className="fa fa-search fa-fw" />
+                                                                <span>Detail</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a
+                                                                role="button"
+                                                                tabIndex="0"
+                                                                onClick={() => browserHistory.push(`/posts/edit/${item.id}`)}
+                                                            >
+                                                                <i className="fa fa-edit fa-fw" />
+                                                                <span>Edit</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a
+                                                                role="button"
+                                                                tabIndex="0"
+                                                                onClick={() => {
+                                                                    this.setState({ deleteId: item.id });
+                                                                    this.setModalVisible(!this.state.modalVisible);
+                                                                }}
+                                                            >
+                                                                <i className="fa fa-trash fa-fw" />
+                                                                <span>Delete</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
                                                 </td>
                                             </tr>
                                         ))
@@ -125,5 +198,6 @@ PagePostsComponent.propTypes = {
     posts: PropTypes.array.isRequired,
     updateUsers: PropTypes.func.isRequired,
     users: PropTypes.array.isRequired,
+    deletePosts: PropTypes.func.isRequired,
 };
 export default PagePostsComponent;

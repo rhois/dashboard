@@ -11,6 +11,7 @@ import { PagePostsDetail } from '../page-posts-detail';
 import { PageAlbums } from '../page-albums';
 import { PagePhotos } from '../page-photos';
 import { PagePhotosDetail } from '../page-photos-detail';
+import { CreatePosts } from '../page-posts/libraries/create-posts';
 
 const history = syncHistoryWithStore(browserHistory, store);
 
@@ -24,6 +25,7 @@ export const AppRoute = () => (
           <Route path="users" component={PageUsers} />
           <Route path="posts" component={PagePosts} />
           <Route path="posts/:id" component={PagePostsDetail} />
+          <Route path="posts/edit/:id" component={CreatePosts} />
           <Route path="albums" component={PageAlbums} />
           <Route path="photos/albums/:id" component={PagePhotos} />
           <Route path="photos/:id" component={PagePhotosDetail} />
